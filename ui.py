@@ -50,7 +50,10 @@ class TaskBarIcon(wx.TaskBarIcon):
     def onExit(self, event):
         wx.CallAfter(self.Destroy)
     def notice(self, text):
-        self.ShowBalloon(title = TRAY_TOOLTIP, text = text, msec = 1000, flags = wx.ICON_INFORMATION)
+        if sys.platform == "win32":
+            self.ShowBalloon(title = TRAY_TOOLTIP, text = text, msec = 1000, flags = wx.ICON_INFORMATION)
+        elif sys.platform.startswith('linux'):
+            pass
     def Destroy(self):
         super(TaskBarIcon, self).Destroy()
         # ctypes.windll.user32.PostQuitMessage(0)
