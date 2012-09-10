@@ -121,10 +121,11 @@ def authenticate(username, password, cas_no_redir = False): # [username, passwor
         return True
 
 if __name__ == '__main__':
+    from getpass import getpass
     # authenticate()
     print "Your CalNet credentials will be overwritten without checking for their validity."
     new_user = raw_input("CalNet ID: ")
-    new_pass = raw_input("CalNet passphrase: ")
+    new_pass = getpass("CalNet passphrase: ")
     write_auth(new_user, new_pass)
     print "Press any key to continue."
     if sys.platform == "win32":
