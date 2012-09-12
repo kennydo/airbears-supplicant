@@ -9,6 +9,8 @@ if sys.platform == "win32":
     import win32api
 if sys.platform == "darwin":
     from Foundation import NSAutoreleasePool
+if sys.platform.startswith("linux"):
+    import dbus
 
 app = None
 
@@ -39,6 +41,17 @@ class TaskBarIcon(wx.TaskBarIcon):
 
         self.dialog = dialog
         # self.Bind(wx.EVT_TASKBAR_LEFT_DOWN, self.on_left_down)
+
+        # linux interaces with the DBus Notification object often
+        if sys.platform.startswith("linux"):
+            bus_name = 'org.freedesktop.Notifications'
+            object_path = '/org/freedesktop/Notifications'
+            interface_name = bus_name
+
+            bus = dbus.SessionBus()
+            notification_obj = bus.get_object(bus_name, object_path)
+            self._last_notification = 0
+            self._notification_interface = dbus.Interface(notification_obj, interface_name)
     def CreatePopupMenu(self):
         menu = wx.Menu()
         create_menu_item(menu, 'Change Credentials', self.onShowChangeCredentials)
@@ -53,7 +66,11 @@ class TaskBarIcon(wx.TaskBarIcon):
         if sys.platform == "win32":
             self.ShowBalloon(title = TRAY_TOOLTIP, text = text, msec = 1000, flags = wx.ICON_INFORMATION)
         elif sys.platform.startswith('linux'):
-            pass
+            self._last_notification = self._notification_interface.Notify(TRAY_TOOLTIP,
+                                                                          self._last_notification,
+                                                                          TRAY_ICON, TRAY_TOOLTIP,
+                                                                          text, [],
+                                                                          [], 1000)
     def Destroy(self):
         super(TaskBarIcon, self).Destroy()
         # ctypes.windll.user32.PostQuitMessage(0)
