@@ -66,9 +66,11 @@ class TaskBarIcon(wx.TaskBarIcon):
         if sys.platform == "win32":
             self.ShowBalloon(title = TRAY_TOOLTIP, text = text, msec = 1000, flags = wx.ICON_INFORMATION)
         elif sys.platform.startswith('linux'):
+            script_directory = os.path.dirname(os.path.realpath(__file__))
+            icon_path = os.path.join(script_directory, TRAY_ICON)
             self._last_notification = self._notification_interface.Notify(TRAY_TOOLTIP,
                                                                           self._last_notification,
-                                                                          TRAY_ICON, TRAY_TOOLTIP,
+                                                                          icon_path, TRAY_TOOLTIP,
                                                                           text, [],
                                                                           [], 1000)
     def Destroy(self):
